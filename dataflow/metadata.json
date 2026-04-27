@@ -1,0 +1,31 @@
+{
+    "name": "realtime-dataflow-job",
+    "description": "Streaming pipeline from Pub/Sub to BigQuery & Bigtable",
+    "parameters": [
+      {
+        "name": "input_topic",
+        "label": "Pub/Sub Input Topic",
+        "helpText": "Input topic for streaming data"
+      },
+      {
+        "name": "dead_letter_topic",
+        "label": "Pub/Sub Dead Letter Topic",
+        "helpText": "Dead-letter Pub/Sub topic for invalid events"
+      },
+      {
+        "name": "output_table",
+        "label": "BigQuery Output Table",
+        "helpText": "Destination BigQuery table, format: project:dataset.table"
+      },
+      {
+        "name": "bigtable_instance_id",
+        "label": "Bigtable Instance ID",
+        "helpText": "Bigtable instance to write serving rows"
+      },
+      {
+        "name": "bigtable_table_id",
+        "label": "Bigtable Table ID",
+        "helpText": "Bigtable table to write serving rows"
+      }
+    ]
+  }

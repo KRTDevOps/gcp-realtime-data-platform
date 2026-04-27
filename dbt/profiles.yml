@@ -1,0 +1,12 @@
+gcp_realtime_profile:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: service-account
+      project: your-project-id
+      dataset: analytics
+      threads: 4
+      keyfile: /path/to/service-account.json
+      timeout_seconds: 300
+      location: us-central1

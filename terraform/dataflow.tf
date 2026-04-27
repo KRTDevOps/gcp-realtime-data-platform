@@ -1,0 +1,4 @@
+resource "google_storage_bucket" "dataflow_bucket" {
+  name     = var.bucket_name
+  location = var.region
+}
