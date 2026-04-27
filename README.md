@@ -66,3 +66,45 @@ terraform validate
 tflint --init
 tflint
 ```
+
+### Optional GKE Setup
+
+If you also need GKE for serving APIs or custom workloads, enable it via Terraform variables:
+
+```bash
+cd terraform
+terraform apply \
+  -var="project_id=<your-project-id>" \
+  -var="bucket_name=<your-dataflow-bucket>" \
+  -var="enable_gke=true"
+```
+
+New Terraform files:
+
+- `terraform/gke.tf`: optional GKE cluster and node pool.
+- `terraform/outputs.tf`: cluster name and endpoint outputs.
+
+Baseline Kubernetes manifests (edit image and env values before apply):
+
+- `k8s/realtime-api-deployment.yaml`
+- `k8s/realtime-api-service.yaml`
+
+Example apply:
+
+```bash
+gcloud container clusters get-credentials realtime-gke --region us-central1 --project <your-project-id>
+kubectl apply -f k8s/realtime-api-deployment.yaml
+kubectl apply -f k8s/realtime-api-service.yaml
+```
+
+### CI/CD Kubernetes Promotion
+
+`cicd/github-actions.yml` now deploys Kubernetes overlays automatically:
+
+- PR merged to `main` -> deploys `k8s/overlays/dev`
+- tag push `v*` (example: `v1.0.0`) -> deploys `k8s/overlays/prod`
+
+Required GitHub secrets:
+
+- `GCP_PROJECT_ID`
+- `GCP_SA_KEY`

@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: realtime-api
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+        - name: realtime-api
+          image: gcr.io/PROJECT_ID/realtime-api:dev
+          env:
+            - name: PROJECT_ID
+              value: "PROJECT_ID"
+            - name: REGION
+              value: "us-central1"

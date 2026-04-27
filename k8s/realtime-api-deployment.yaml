@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: realtime-api
+  labels:
+    app: realtime-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: realtime-api
+  template:
+    metadata:
+      labels:
+        app: realtime-api
+    spec:
+      containers:
+        - name: realtime-api
+          image: gcr.io/PROJECT_ID/realtime-api:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: PROJECT_ID
+              value: "PROJECT_ID"
+            - name: REGION
+              value: "us-central1"

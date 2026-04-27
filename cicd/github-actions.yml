@@ -3,8 +3,11 @@ name: Deploy Data Pipeline
 on:
   push:
     branches: [main]
+    tags:
+      - "v*"
   pull_request:
     branches: [main]
+    types: [closed]
 
 jobs:
   terraform-checks:
@@ -36,7 +39,7 @@ jobs:
 
   deploy:
     needs: terraform-checks
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     env:
       PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
@@ -70,3 +73,77 @@ jobs:
         run: |
           docker build -t gcr.io/${PROJECT_ID}/dataflow:latest ./dataflow
           docker push gcr.io/${PROJECT_ID}/dataflow:latest
+
+  deploy-dev-k8s:
+    needs: terraform-checks
+    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
+    runs-on: ubuntu-latest
+    env:
+      PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      REGION: us-central1
+      GKE_CLUSTER: realtime-gke
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup GCP Auth
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Setup gcloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure kubectl for GKE
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          location: ${{ env.REGION }}
+          project_id: ${{ env.PROJECT_ID }}
+
+      - name: Ensure dev namespace exists
+        run: kubectl create namespace realtime-dev --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Deploy dev overlay
+        run: kubectl apply -k k8s/overlays/dev
+
+      - name: Verify rollout
+        run: kubectl rollout status deployment/dev-realtime-api -n realtime-dev --timeout=180s
+
+  deploy-prod-k8s:
+    needs: terraform-checks
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    env:
+      PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      REGION: us-central1
+      GKE_CLUSTER: realtime-gke
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup GCP Auth
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Setup gcloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure kubectl for GKE
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          location: ${{ env.REGION }}
+          project_id: ${{ env.PROJECT_ID }}
+
+      - name: Ensure prod namespace exists
+        run: kubectl create namespace realtime-prod --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Deploy prod overlay
+        run: kubectl apply -k k8s/overlays/prod
+
+      - name: Verify rollout
+        run: kubectl rollout status deployment/prod-realtime-api -n realtime-prod --timeout=300s

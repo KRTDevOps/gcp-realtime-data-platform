@@ -47,3 +47,39 @@ variable "bucket_name" {
     error_message = "bucket_name must be a valid GCS bucket name."
   }
 }
+
+variable "enable_gke" {
+  description = "If true, create GKE cluster resources"
+  type        = bool
+  default     = false
+}
+
+variable "gke_cluster_name" {
+  description = "GKE cluster name"
+  type        = string
+  default     = "realtime-gke"
+}
+
+variable "gke_zones" {
+  description = "Zones used by the GKE cluster node locations"
+  type        = list(string)
+  default     = ["us-central1-a", "us-central1-b"]
+}
+
+variable "gke_node_pool_name" {
+  description = "Primary GKE node pool name"
+  type        = string
+  default     = "default-node-pool"
+}
+
+variable "gke_node_count" {
+  description = "Initial node count for GKE node pool"
+  type        = number
+  default     = 2
+}
+
+variable "gke_machine_type" {
+  description = "Machine type for GKE worker nodes"
+  type        = string
+  default     = "e2-standard-2"
+}
