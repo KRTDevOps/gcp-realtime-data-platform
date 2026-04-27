@@ -116,3 +116,19 @@ Required GitHub secrets:
 - `.github/CODEOWNERS`: code ownership and mandatory reviewer mapping
 - `.github/dependabot.yml`: automated dependency update configuration
 - `.github/pull_request_template.md`: PR checklist including security controls
+
+### IAM, Networking, and Production Workflow
+
+Terraform additions:
+
+- `terraform/iam.tf`: service accounts and baseline IAM role bindings
+- `terraform/networking.tf`: optional custom VPC/subnet/firewall controls
+- `terraform/versions.tf`: pinned `google` and `google-beta` provider versions
+
+Production deployment workflow:
+
+- `.github/workflows/production-infra.yml`: tag-based or manual production Terraform plan/apply
+
+Additional required GitHub secret for production workflow:
+
+- `GCP_TERRAFORM_BUCKET`
