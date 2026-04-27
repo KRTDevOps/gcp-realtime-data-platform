@@ -1,0 +1,11 @@
+# Default owners for all files
+* @KRTDevOps
+
+# Infrastructure and platform
+/terraform/ @KRTDevOps
+/cicd/ @KRTDevOps
+
+# Data pipeline and orchestration
+/dataflow/ @KRTDevOps
+/airflow/ @KRTDevOps
+/dbt/ @KRTDevOps

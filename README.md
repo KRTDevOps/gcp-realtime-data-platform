@@ -108,3 +108,11 @@ Required GitHub secrets:
 
 - `GCP_PROJECT_ID`
 - `GCP_SA_KEY`
+
+### Governance and Security
+
+- `GOVERNANCE.md`: repository governance and change-control policy
+- `SECURITY.md`: vulnerability reporting and security baseline
+- `.github/CODEOWNERS`: code ownership and mandatory reviewer mapping
+- `.github/dependabot.yml`: automated dependency update configuration
+- `.github/pull_request_template.md`: PR checklist including security controls
