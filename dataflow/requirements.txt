@@ -1,4 +1,4 @@
-apache-beam[gcp]==2.54.0
+apache-beam[gcp]==2.75.0
 google-cloud-bigquery
 google-cloud-bigtable
 google-cloud-pubsub
